@@ -38,7 +38,7 @@ class FastSync(object):
             table_name=self.table_name,
             set_fields=self.set_fields_sql(data_row),
             id_name=self.id_fieldname,
-            id=data_row[self.id_fieldname]
+            id=self._stringify(data_row[self.id_fieldname])
         )
 
     def insert_sql(self, data_row):
@@ -77,7 +77,7 @@ class FastSync(object):
             """.format(
                 table_name=self.table_name,
                 id_fieldname=self.id_fieldname,
-                id=data_row[self.id_fieldname],
+                id=self._stringify(data_row[self.id_fieldname]),
                 update_sql=self.update_sql(data_row),
                 insert_sql=self.insert_sql(data_row)
             )
