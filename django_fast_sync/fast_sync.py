@@ -1,7 +1,7 @@
 from django.db import connection
 
 
-class Sync(object):
+class FastSync(object):
     def __init__(self, data, id_fieldname, table_name):
         self.data = data
         self.id_fieldname = id_fieldname
