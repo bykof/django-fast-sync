@@ -1,9 +1,10 @@
 from distutils.core import setup
+from setuptools import find_packages
 
 setup(
     name='django-fast-sync',
-    version='0.2.1',
-    packages=['django_fast_sync'],
+    version='0.2.3',
+    packages=find_packages(),
     url='https://github.com/bykof/django-fast-sync',
     license='Apache License',
     include_package_data=True,

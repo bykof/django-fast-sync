@@ -19,7 +19,7 @@ class FastSync(object):
         for key, value in data_row.items():
 
             if key != self.id_fieldname:
-                set_string.append('{}={}'.format(key, value))
+                set_string.append('{}={}'.format(key, self._stringify(value)))
 
         return ', '.join(set_string)
 
