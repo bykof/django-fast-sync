@@ -36,8 +36,8 @@ Then you can import my package and just use:
 ```
 from django_fast_sync.fast_sync import FastSync
 
-fast_sync = FastSync(my_data_list, 'category_id', 'booking_category')
-# FastSync(list_of_data, primary_field_name, table_name)
+fast_sync = FastSync(my_data_list, ['category_id'], 'booking_category')
+# FastSync(list_of_data, list_of_primary_field_names, table_name)
 and then run
 fast_sync.start_sync()
 ```
@@ -49,8 +49,8 @@ from django.db.transaction import *
 
 from django_fast_sync.fast_sync import FastSync
 
-fast_sync = FastSync(my_data_list, 'category_id', 'booking_category')
-# FastSync(list_of_data, primary_field_name, table_name)
+fast_sync = FastSync(my_data_list, ['category_id'], 'booking_category')
+# FastSync(list_of_data, list_of_primary_field_names, table_name)
 and then run
 set_autocommit(False)
 fast_sync.start_sync()
