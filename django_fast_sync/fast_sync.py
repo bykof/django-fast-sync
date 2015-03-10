@@ -66,7 +66,7 @@ class FastSync(object):
         """
         for data_row in self.data:
             yield """
-            DO $$DECLARE r record;
+            DO $$
             BEGIN
                 IF EXISTS (SELECT * from {table_name} WHERE {id_fieldname}={id}) THEN
                     {update_sql}
