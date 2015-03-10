@@ -21,9 +21,9 @@ class FastSync(object):
             if isinstance(string, datetime.time):
                 string = string.strftime('%H:%M:%S')
 
-            return '\'' + str(string) + '\''
+            return u'\'' + unicode(string) + u'\''
         else:
-            return 'NULL'
+            return u'NULL'
 
     def set_fields_sql(self, data_row):
         set_string = []
@@ -31,7 +31,7 @@ class FastSync(object):
         for key, value in data_row.items():
 
             if key not in self.id_fieldnames:
-                set_string.append('{}={}'.format(key, self._stringify(value)))
+                set_string.append(u'{}={}'.format(key, self._stringify(value)))
 
         return ', '.join(set_string)
 
@@ -42,7 +42,7 @@ class FastSync(object):
         :return: update_sql_string
         """
 
-        return """
+        return u"""
             UPDATE {table_name}
             SET {set_fields}
             WHERE {where_queries};
@@ -61,7 +61,7 @@ class FastSync(object):
         for key, value in data_row.items():
             data_row[key] = self._stringify(value)
 
-        return """
+        return u"""
             INSERT INTO {custom_table_name} ({field_names})
             VALUES ({custom_values});
         """.format(
@@ -74,11 +74,11 @@ class FastSync(object):
         where_queries = []
 
         for id_fieldname in self.id_fieldnames:
-            where_queries.append('{}={}'.format(id_fieldname, self._stringify(data_row[id_fieldname])))
-        return 'AND'.join(where_queries)
+            where_queries.append(u'{}={}'.format(id_fieldname, self._stringify(data_row[id_fieldname])))
+        return u'AND'.join(where_queries)
 
     def select_sql(self, data_row):
-        return """
+        return u"""
             (SELECT * from {table_name} WHERE {where_queries})
         """.format(
             table_name=self.table_name,
@@ -91,7 +91,7 @@ class FastSync(object):
         :return: sql_string
         """
         for data_row in self.data:
-            yield """
+            yield u"""
             DO $$
             BEGIN
                 IF EXISTS {select_sql} THEN
