@@ -2,9 +2,9 @@ from django.db import connection
 
 
 class FastSync(object):
-    def __init__(self, data, id_fieldname, table_name):
+    def __init__(self, data, id_fieldnames, table_name):
         self.data = data
-        self.id_fieldname = id_fieldname
+        self.id_fieldnames = id_fieldnames
         self.table_name = table_name
 
     def _stringify(self, string):
@@ -18,7 +18,7 @@ class FastSync(object):
 
         for key, value in data_row.items():
 
-            if key != self.id_fieldname:
+            if key not in self.id_fieldnames:
                 set_string.append('{}={}'.format(key, self._stringify(value)))
 
         return ', '.join(set_string)
@@ -27,25 +27,24 @@ class FastSync(object):
         """
         Create the update sql string with given fields
         :param data_row:
-        :return:
+        :return: update_sql_string
         """
 
         return """
             UPDATE {table_name}
             SET {set_fields}
-            WHERE {id_name}={id};
+            WHERE {where_queries};
         """.format(
             table_name=self.table_name,
             set_fields=self.set_fields_sql(data_row),
-            id_name=self.id_fieldname,
-            id=self._stringify(data_row[self.id_fieldname])
+            where_queries=self.where_sql(data_row)
         )
 
     def insert_sql(self, data_row):
         """
         Create the insert sql string with given fields
         :param data_row:
-        :return:
+        :return: insert_sql_string
         """
         for key, value in data_row.items():
             data_row[key] = self._stringify(value)
@@ -59,30 +58,47 @@ class FastSync(object):
             custom_values=', '.join(data_row.values()),
         )
 
+    def where_sql(self, data_row):
+        where_queries = []
+
+        for id_fieldname in self.id_fieldnames:
+            where_queries.append('{}={}'.format(id_fieldname, self._stringify(data_row[id_fieldname])))
+        return 'AND'.join(where_queries)
+
+    def select_sql(self, data_row):
+        return """
+            (SELECT * from {table_name} WHERE {where_queries})
+        """.format(
+            table_name=self.table_name,
+            where_queries=self.where_sql(data_row)
+        )
+
     def iter_sql(self):
         """
         The generator to create the pgsql inline function for the sync command
-        :return:
+        :return: sql_string
         """
         for data_row in self.data:
             yield """
             DO $$
             BEGIN
-                IF EXISTS (SELECT * from {table_name} WHERE {id_fieldname}={id}) THEN
+                IF EXISTS {select_sql} THEN
                     {update_sql}
                 ELSE
                     {insert_sql}
                 END IF;
             END$$;
             """.format(
-                table_name=self.table_name,
-                id_fieldname=self.id_fieldname,
-                id=self._stringify(data_row[self.id_fieldname]),
+                select_sql=self.select_sql(data_row),
                 update_sql=self.update_sql(data_row),
                 insert_sql=self.insert_sql(data_row)
             )
 
     def start_sync(self):
+        """
+        Starts to sync the data with the default database
+        :return:
+        """
         cursor = connection.cursor()
         for sql_string in self.iter_sql():
             cursor.execute(sql_string)
