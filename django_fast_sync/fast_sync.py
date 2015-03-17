@@ -75,7 +75,7 @@ class FastSync(object):
 
         for id_fieldname in self.id_fieldnames:
             where_queries.append(u'{}={}'.format(id_fieldname, self._stringify(data_row[id_fieldname])))
-        return u'AND'.join(where_queries)
+        return u' AND '.join(where_queries)
 
     def select_sql(self, data_row):
         return u"""
