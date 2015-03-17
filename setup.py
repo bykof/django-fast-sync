@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
     name='django-fast-sync',
-    version='0.3.0',
+    version='0.3.1',
     packages=find_packages(),
     url='https://github.com/bykof/django-fast-sync',
     license='Apache License',

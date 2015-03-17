@@ -12,11 +12,11 @@ class FastSync(object):
     def _stringify(self, string):
         if string == 0.0 or string:
 
-            if isinstance(string, datetime.date):
-                string = string.strftime('%Y-%m-%d')
-
             if isinstance(string, datetime.datetime):
                 string = string.strftime('%Y-%m-%d %H:%M:%S')
+
+            if isinstance(string, datetime.date):
+                string = string.strftime('%Y-%m-%d')
 
             if isinstance(string, datetime.time):
                 string = string.strftime('%H:%M:%S')
